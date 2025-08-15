@@ -10,7 +10,7 @@ FoodRouter.route("/expiring-soon")
     .get(FoodController.expiringSoon)
 
 FoodRouter.route("/food/:id")
-    .delete(FoodController.delete)
+    .delete(FoodController.delete)  
 
 
 export default FoodRouter

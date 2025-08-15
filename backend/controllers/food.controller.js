@@ -22,8 +22,10 @@ const FoodController = {
     "expiringSoon": async(req,res) => {
         //get todays date
         const today = new Date();
+        today.setHours(0,0,0,0) // this will be start of that day(midnight)
         // get date 3 days from now
         const threeDaysFromNow = new Date();
+        threeDaysFromNow.setHours(23,59,59,999) // this will be the end of the last day
         threeDaysFromNow.setDate(today.getDate() + 3);
         try{
             const expiringSoon = await Food.find({

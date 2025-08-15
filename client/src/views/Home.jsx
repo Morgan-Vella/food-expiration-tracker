@@ -1,13 +1,13 @@
 import {useState, useEffect } from "react"
 import AddFood from "../components/AddFood.jsx"
 import DaysLeft from "../components/DaysLeft.jsx"
-import FoodItem from "../components/FoodItem.jsx"
+import FoodsList from "../components/FoodsList.jsx"
 import axios from "axios"
 
 const Home = () => {
     const [foods,setFoods] = useState([])
     const [expiringFoods, setExpiringFoods] = useState([])
-    const [showExpiring, setShowExpiring] = useState(false)
+    const [listToRender, setListToRender] = useState("all")
 
     useEffect(() =>{ 
         axios.get("http://localhost:8000/api/food")
@@ -19,16 +19,16 @@ const Home = () => {
         try{
             const res = await axios.get("http://localhost:8000/api/expiring-soon")
             setExpiringFoods(res.data)
-            setShowExpiring(true)
+            setListToRender("expiringFoods")
         } catch (err) {
             console.log(err)
 
         }
     };
     const handleShowAll = () =>{ 
-        setShowExpiring(false)
+        setListToRender("all")
     }
-    const listToRender = showExpiring ? expiringFoods : foods;
+    const foodsToShow = listToRender === "all" ? foods : expiringFoods
 
     const handleAdd = (newFood) => {
         setFoods([...foods, newFood])
@@ -50,15 +50,8 @@ const Home = () => {
                 <button onClick={handleShowAll}>Show All Foods</button> 
                 <button onClick={handleShowExpiring}>Show Expiring Soon</button>
             </div>
-            <AddFood addOn={handleAdd}/>   
-                    
-            {/* <ul>    
-                {listToRender.map(food => (
-                    <li key={food._id}>
-                        <span>{food.name} — <DaysLeft expirationDate={food.expirationDate}/></span>
-                    </li>
-                ))}
-            </ul> */}
+            <AddFood addOn={handleAdd}/>
+            <FoodsList foods={foodsToShow} onDelete={handleDelete} />
         </div>
         </>
     )
