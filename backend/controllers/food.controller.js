@@ -19,14 +19,14 @@ const FoodController = {
             res.status(400).json(err)
         }
     },
-    "getThreeDaysFromNow": async(req,res) => {
+    "expiringSoon": async(req,res) => {
         //get todays date
         const today = new Date();
         // get date 3 days from now
         const threeDaysFromNow = new Date();
         threeDaysFromNow.setDate(today.getDate() + 3);
         try{
-            const foodThreeDaysFromNow = await Food.find({
+            const expiringSoon = await Food.find({
                 expirationDate: {
                     //$gte: greater than or equal to -> means today or later
                     $gte: today,
@@ -34,11 +34,23 @@ const FoodController = {
                     $lte: threeDaysFromNow
                 }
             }).sort({expirationDate: 1})
+            res.json(expiringSoon)
         } catch (err) {
             console.log(err)
             res.status(400).json(err)
         }
     },
-}
+    "delete": async (req, res) => {
+        try{
+            const deletedFood = await Food.findByIdAndDelete(req.params.id);
+            if ( !deletedFood ){
+                return res.status(404).json({message: "Food Item Not Found"})
+            }
+            res.json({message:"Food Deleted Successfully"})
+        } catch (err) {
+            res.status(400).json(err)
+        }
+    }
+};
 
 export default FoodController

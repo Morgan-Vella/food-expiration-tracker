@@ -6,4 +6,11 @@ FoodRouter.route("/food")
     .post(FoodController.create)
     .get(FoodController.getAll)
 
+FoodRouter.route("/expiring-soon")
+    .get(FoodController.expiringSoon)
+
+FoodRouter.route("/food/:id")
+    .delete(FoodController.delete)
+
+
 export default FoodRouter

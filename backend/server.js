@@ -7,7 +7,7 @@ import FoodRouter from "./routes/food.routes.js"
 
 dbConnect()
 const app = express()
-app.use(cors(), express.json())
+app.use(cors({origin:"http://localhost:5173", credentials: true}), express.json())
 app.use('/api', FoodRouter)
 
 dotenv.config()
