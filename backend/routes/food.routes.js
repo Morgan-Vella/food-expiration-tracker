@@ -1,7 +1,7 @@
-import expresse from "express"
+import express from "express"
 import FoodController from "../controllers/food.controller.js"
 
-const FoodRouter = expresse.Router()
+const FoodRouter = express.Router()
 FoodRouter.route("/food")
     .post(FoodController.create)
     .get(FoodController.getAll)
