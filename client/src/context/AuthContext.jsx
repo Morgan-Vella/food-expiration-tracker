@@ -22,17 +22,21 @@ export const AuthProvider  = ({ children }) => {
     },[]);
 
     const login = async (email, password) => {
-        const res = await api.post("/login", {email, password});
-        setUser(req.data.user);
+        const res = await api.post("/login", {email, password}, {withCredentials: true});
+        setUser(res.data);
     };
 
     const logout = async () => {
-        await api.post("/logout");
+        await api.post("/logout",{},{withCredentials: true});
         setUser(null);
     };
 
+    const register = async (userData) => {
+        const res = await api.post("/register", userData, {withCredentials: true})
+        setUser(res.data)
+    }
     return (
-        <AuthContext.Provider value={{ user, loading, login, logout }}>
+        <AuthContext.Provider value={{ user, loading, login, logout, register }}>
             {children}
         </AuthContext.Provider>
     )

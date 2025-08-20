@@ -5,20 +5,42 @@ import bcrypt from "bcrypt"
 const UserController = {
     "register": async (req, res) => {
         try{
+            const existingUser = await User.findOne({email: req.body.email});
+            if (existingUser) {
+                return res.status(400).json({errors: {email: {message: "Email already in use."}}});
+            }
             const newUser = await User.create(req.body)
-            res.json({"message": "User created successfully"})
+            const token = jwt.sign({id:newUser._id}, process.env.JWT_SECRET, {expiresIn: "1d"});
+            res.cookie("token", token, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === "production",
+                sameSite: "strict", 
+                maxAge: 24 * 60 * 60 * 1000
+            }); 
+
+            res.json(newUser)
         } catch (err) {
+            console.log(err)
             res.status(400).json(err)
         }
     },
     "login": async (req, res) =>{ 
         try{
             const {email, password} = req.body;
+            if (!email || !password ) {
+                return res.status(400).json({
+                    errors: {
+                        email : !email ? "Email is required" : undefined,
+                        password: !password? "Password is required" : undefined
+                    }
+                })
+            }
             const user = await User.findOne({email});
-            if (!user) return res.status(401).json({error: "User not found."});
+            const safeUser = await User.findOne({email}).select("-password")
+            if (!user) return res.status(401).json({errors: {email: "User not found."}});
             
             const isMatch = await bcrypt.compare(password, user.password)
-            if(!isMatch) return res.status(401).json({error: "User not found."})
+            if(!isMatch) return res.status(401).json({errors: {password: "User not found."}})
 
             const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {expiresIn: "1d"}) 
 
@@ -29,9 +51,9 @@ const UserController = {
                 maxAge: 24 * 60 * 60 * 1000
             });
 
-            res.json({message: 'Login Succesful'}, user.select("-password"));
+            res.json(safeUser);
         } catch (err) {
-            res.status(400).json({error: err.message});
+            res.status(400).json(err);
         }
     },
     "logout": async (req, res) => {

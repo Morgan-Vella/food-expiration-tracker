@@ -1,5 +1,6 @@
 import {useState} from "react"
 import axios from "axios"
+import api from "../api/axios.js"
 
 const AddFood = ({addOn}) => {
     const [name, setName ] = useState("")
@@ -7,7 +8,7 @@ const AddFood = ({addOn}) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const res = await axios.post("http://localhost:8000/api/food", {
+        const res = await api.post("/food", {
             name,
             expirationDate: date
         });

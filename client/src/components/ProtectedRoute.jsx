@@ -5,9 +5,12 @@ import { AuthContext } from "../context/AuthContext.jsx"
 const ProtectedRoute = ({children}) => {
     const { user, loading } = useContext(AuthContext);
 
-    if (loading) return <p>Loading...</p>
-    if (!user) return <Navigate to="/login-page"/>
-
+    if (loading){ 
+        return <p>Loading...</p>
+    } 
+    if (!user) {
+        return <Navigate to="/login-page" replace/>
+    }
     return children;
 };
 

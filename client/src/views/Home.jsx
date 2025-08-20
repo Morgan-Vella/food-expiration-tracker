@@ -1,23 +1,24 @@
-import {useState, useEffect } from "react"
+import {useState, useEffect, useContext } from "react"
 import AddFood from "../components/AddFood.jsx"
-import DaysLeft from "../components/DaysLeft.jsx"
+import api from "../api/axios.js"
 import FoodsList from "../components/FoodsList.jsx"
-import axios from "axios"
+import { AuthContext } from "../context/AuthContext.jsx"
 
 const Home = () => {
-    const [foods,setFoods] = useState([])
-    const [expiringFoods, setExpiringFoods] = useState([])
-    const [listToRender, setListToRender] = useState("all")
+    const [foods,setFoods] = useState([]);
+    const [expiringFoods, setExpiringFoods] = useState([]);
+    const [listToRender, setListToRender] = useState("all");
+    const { logout } = useContext(AuthContext);
 
     useEffect(() =>{ 
-        axios.get("http://localhost:8000/api/food")
+        api.get("/food")
             .then(res => {setFoods(res.data), console.log(res.data)})
             .catch(err => console.log(err))
     }, []);
     
     const handleShowExpiring = async () =>{ 
         try{
-            const res = await axios.get("http://localhost:8000/api/expiring-soon")
+            const res = await api.get("/expiring-soon")
             setExpiringFoods(res.data)
             setListToRender("expiringFoods")
         } catch (err) {
@@ -35,7 +36,7 @@ const Home = () => {
     }
     const handleDelete = async (id) => {
         try{
-            await axios.delete(`http://localhost:8000/api/food/${id}`)
+            await api.delete(`/food/${id}`)
             setFoods(prevFoods => prevFoods.filter(food=>food._id !== id))
         }catch(err) {
             console.log(err)
@@ -49,6 +50,7 @@ const Home = () => {
             <div style={{marginBottom: "10px"}}>
                 <button onClick={handleShowAll}>Show All Foods</button> 
                 <button onClick={handleShowExpiring}>Show Expiring Soon</button>
+                <button onClick={logout}>Logout</button>
             </div>
             <AddFood addOn={handleAdd}/>
             <FoodsList foods={foodsToShow} onDelete={handleDelete} />
