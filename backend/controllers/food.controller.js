@@ -3,7 +3,7 @@ import Food from "../models/food.model.js";
 const FoodController = {
     "create": async(req, res) => {
         try{
-            const newFood = await Food.create(req.body);
+            const newFood = await Food.create({...req.body, user: req.user});
             res.json(newFood);
         } catch (err) {
             console.log(err)
@@ -12,7 +12,7 @@ const FoodController = {
     },
     "getAll": async (req, res) => {
         try{
-            const allFood = await Food.find().sort({expirationDate: 1});
+            const allFood = await Food.find({user: req.user}).sort({expirationDate: 1});
             res.json(allFood)
         } catch (err) {
             console.log(err)
@@ -29,6 +29,7 @@ const FoodController = {
         threeDaysFromNow.setDate(today.getDate() + 3);
         try{
             const expiringSoon = await Food.find({
+                user: req.user,
                 expirationDate: {
                     //$gte: greater than or equal to -> means today or later
                     $gte: today,
@@ -44,7 +45,7 @@ const FoodController = {
     },
     "delete": async (req, res) => {
         try{
-            const deletedFood = await Food.findByIdAndDelete(req.params.id);
+            const deletedFood = await Food.findByIdAndDelete({_id: req.params.id, user: req.user});
             if ( !deletedFood ){
                 return res.status(404).json({message: "Food Item Not Found"})
             }

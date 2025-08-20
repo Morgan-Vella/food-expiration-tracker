@@ -10,7 +10,7 @@ async function dbConnect() {
             dbName: "food",
         })
         console.log("Pinged your deployment. You have succesfully connected to MongoDB")
-    } catch (error){
+    } catch (err){
         console.log(err)
         throw(err)
     }
