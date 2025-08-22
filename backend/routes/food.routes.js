@@ -11,7 +11,10 @@ FoodRouter.route("/expiring-soon")
     .get(authMiddleware, FoodController.expiringSoon)
 
 FoodRouter.route("/food/:id")
-    .delete(authMiddleware, FoodController.delete)  
+    .delete(authMiddleware, FoodController.delete)
+
+FoodRouter.route("/search")
+    .get(authMiddleware, FoodController.search)
 
 
 export default FoodRouter
